@@ -14,7 +14,7 @@ namespace CreateWithCodeGameJam2020.Scripts
         private Material _interactMaterial; 
 
         private Material _startMaterial;
-        private bool _canInteract = false;
+        protected bool _canInteract = false;
         protected bool _isTriggered = false;
 
         protected virtual void OnEnable()

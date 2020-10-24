@@ -1,18 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using CreateWithCodeGameJam2020.Utility;
 
-public class PlayerManager : MonoBehaviour
+namespace CreateWithCodeGameJam2020.Manager
 {
-    // Start is called before the first frame update
-    void Start()
+    public class PlayerManager : MonoSingleton<PlayerManager>
     {
-        
-    }
+        public static bool _hasFlute = false;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public static void SetHasFlute(bool hasFlute)
+        {
+            _hasFlute = hasFlute;
+        }
+
+        public static bool GetHasFlute()
+        {
+            return _hasFlute;
+        }
     }
 }
