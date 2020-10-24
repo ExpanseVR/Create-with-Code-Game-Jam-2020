@@ -65,6 +65,7 @@ namespace CreateWithCodeGameJam2020.Scripts
         protected virtual void BeginInteraction ()
         {
             _renderer.material = _startMaterial;
+            _isTriggered = true;
         }
 
         protected virtual void OnDisable()

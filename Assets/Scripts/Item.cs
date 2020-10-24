@@ -12,7 +12,8 @@ namespace CreateWithCodeGameJam2020.Scripts
 
         public enum ItemType
         {
-            Flute
+            Flute,
+            Key
         }
 
         protected void CallOnGetItem (ItemType itemType)
