@@ -9,6 +9,9 @@ public class Chest : Interactable
     private Animator _lidAnimator;
 
     [SerializeField]
+    private AudioSource _audioSource;
+
+    [SerializeField]
     private ItemHolder _itemHolder;
 
     protected override void BeginInteraction()
@@ -19,6 +22,7 @@ public class Chest : Interactable
         base.BeginInteraction();
         _lidAnimator.SetTrigger("ChestOpen");
         _itemHolder.MoveItemHeld();
+        _audioSource.Play();
     }
 
 }

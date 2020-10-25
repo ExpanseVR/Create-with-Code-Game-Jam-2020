@@ -12,11 +12,14 @@ namespace CreateWithCodeGameJam2020.Scripts
         [SerializeField]
         private GameObject _interactWith;
 
+        [SerializeField]
+        private AudioSource _audioSource;
+
         protected override void BeginInteraction()
         {
             base.BeginInteraction();
-            _isTriggered = true;
             onButtonPressed?.Invoke(_interactWith);
+            _audioSource.Play();
         }
     }
 }

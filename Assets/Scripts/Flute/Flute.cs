@@ -9,7 +9,7 @@ namespace CreateWithCodeGameJam2020.FlutePlayer
 {
     public class Flute : Item
     {
-        public static event Action onPlayNote;
+        public static event Action<string> onPlayMelody;
         public static event Action<GameManager.Worlds> onChangeWorld;
 
         [SerializeField]
@@ -22,27 +22,24 @@ namespace CreateWithCodeGameJam2020.FlutePlayer
         private GameObject _fluteModel;
 
         [SerializeField]
-        Transform _player;
+        private Transform _player;
 
         [SerializeField]
-        List<AudioClip> _melody = new List<AudioClip>();
+        private List<AudioClip> _melodyNotes = new List<AudioClip>();
 
+        [SerializeField]
+        private string _worldCode;
+        
+        private string[] _melody = new string[14];
+        private int _melodyCount = 0;
         private bool _isFluteReady = false;
         private bool _playingMelody = false;
         
-
-        private void Update()
-        {
-            //Debug TOREMOVE
-            if (Input.GetKeyDown(KeyCode.T))
-                StartCoroutine(PlayMelody());
-        }
-
         protected override void BeginInteraction()
         {
             base.BeginInteraction();
             _fluteModel.SetActive(false);
-            PlayerManager.SetHasFlute(true);
+            PlayerManager.Instance.SetHasFlute(true);
             this.transform.SetParent(_player);
             _canInteract = false;
             CallOnGetItem(GetItemType());
@@ -61,8 +58,13 @@ namespace CreateWithCodeGameJam2020.FlutePlayer
 
         public void PlayNote()
         {
-            _audioSource.PlayOneShot(_fluteNotes[0], 0.6f);
-            onPlayNote?.Invoke();
+            StartCoroutine(PlayMelody());
+        }
+
+        public void SetMelody (string[] melody, int melodyCount)
+        {
+            _melody = melody;
+            _melodyCount = melodyCount;
         }
 
         IEnumerator PlayMelody()
@@ -70,23 +72,57 @@ namespace CreateWithCodeGameJam2020.FlutePlayer
             //check if playing mellody
             if (!_playingMelody && _isFluteReady)
             {
+                string newMelody = "";
                 //set playingmelody
                 _playingMelody = true;
 
                 //play through each note in melody
                 int i = 0;
-                while (i < _melody.Count)
+                while (i < _melodyCount)
                 {
-                    _audioSource.PlayOneShot(_melody[i], 0.6f);
-                    yield return new WaitForSeconds(_melody[i].length - 1.4f);
+                    int note;
+                    switch (_melody[i])
+                    {
+                        case "C":
+                            note = 0;
+                            break;
+                        case "D":
+                            note = 1;
+                            break;
+                        case "E":
+                            note = 2;
+                            break;
+                        case "F":
+                            note = 3;
+                            break;
+                        case "G":
+                            note = 4;
+                            break;
+                        case "A":
+                            note = 5;
+                            break;
+                        default:
+                            note = 6;
+                            break;
+                    }
+                    _audioSource.PlayOneShot(_melodyNotes[note], 0.6f);
+                    yield return new WaitForSeconds(_melodyNotes[note].length - 1.4f);
+
+                    //assemble melody to check
+                    newMelody += _melody[i];
                     i++;
                 }
 
+                //Broadcast melody to listeners
+                onPlayMelody?.Invoke(newMelody);
                 //switch worlds
-                if (GameManager.Instance.GetCurrentWorld() != GameManager.Worlds.Red)
-                    onChangeWorld?.Invoke(GameManager.Worlds.Red);
-                else
-                    onChangeWorld?.Invoke(GameManager.Worlds.Real);
+                if (_worldCode == newMelody)
+                {
+                    if (GameManager.Instance.GetCurrentWorld() != GameManager.Worlds.Red)
+                        onChangeWorld?.Invoke(GameManager.Worlds.Red);
+                    else
+                        onChangeWorld?.Invoke(GameManager.Worlds.Real);
+                }
             }
             _playingMelody = false;
         }

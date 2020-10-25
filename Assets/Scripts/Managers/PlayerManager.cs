@@ -6,12 +6,12 @@ namespace CreateWithCodeGameJam2020.Manager
     {
         public static bool _hasFlute = false;
 
-        public static void SetHasFlute(bool hasFlute)
+        public void SetHasFlute(bool hasFlute)
         {
             _hasFlute = hasFlute;
         }
 
-        public static bool GetHasFlute()
+        public bool GetHasFlute()
         {
             return _hasFlute;
         }

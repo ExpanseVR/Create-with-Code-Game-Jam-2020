@@ -1,4 +1,5 @@
-﻿using CreateWithCodeGameJam2020.Utility;
+﻿using CreateWithCodeGameJam2020.UI;
+using CreateWithCodeGameJam2020.Utility;
 using UnityEngine;
 
 namespace CreateWithCodeGameJam2020.Player
@@ -11,17 +12,34 @@ namespace CreateWithCodeGameJam2020.Player
         [SerializeField]
         private Transform _player;
 
+        private float _mouseSensitivityModifier;
+
+        private bool _isEnabled = true;
         private float _xRotation = 0f;
+
+        private void OnEnable()
+        {
+            FluteMenu.onMenuOpen += SetEnabled;
+        }
 
         private void Start()
         {
-            //make sure cursor is not visible in game
-            Cursor.lockState = CursorLockMode.Locked;
+            #if UNITY_EDITOR
+            Debug.Log("Unity Editor");
+            _mouseSensitivityModifier = 1f;
+
+            #elif UNITY_WEBGL
+            Debug.Log("Unity iPhone");
+            _mouseSensitivityModifier = 0.22f;
+
+            #endif
         }
 
         // Update is called once per frame
         void Update()
         {
+            if (!_isEnabled)
+                return;
             //Get mouse input
             float mouseX = Input.GetAxis("Mouse X") * _mouseSensativity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * _mouseSensativity * Time.deltaTime;
@@ -35,6 +53,16 @@ namespace CreateWithCodeGameJam2020.Player
 
             //Convert X direction to rotate player
             _player.Rotate(Vector3.up, mouseX);
+        }
+
+        private void SetEnabled (bool isEnabled)
+        {
+            _isEnabled = isEnabled;
+        }
+
+        private void OnDisable()
+        {
+            FluteMenu.onMenuOpen -= SetEnabled;
         }
     }
 }

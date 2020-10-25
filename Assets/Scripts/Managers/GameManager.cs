@@ -70,6 +70,14 @@ namespace CreateWithCodeGameJam2020.Manager
             _audioSource.Play();
         }
 
+        public void PlayGameMusic ()
+        {
+            _audioSource.Stop();
+            _audioSource.clip = _worldsMusic[0];
+            _audioSource.volume = 0.2f;
+            _audioSource.Play();
+        }
+
         private void OnDisable()
         {
             Flute.onChangeWorld -= ChangeWorld;

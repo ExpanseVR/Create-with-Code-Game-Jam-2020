@@ -22,22 +22,33 @@ namespace CreateWithCodeGameJam2020.Scripts
         [SerializeField]
         private Animator _animator;
 
+        [SerializeField]
+        private AudioSource _audioSource;
+
+        [SerializeField]
+        private AudioClip _unlockSound;
+
+        [SerializeField]
+        private string _notesCode;
+
         protected override void OnEnable()
         {
             base.OnEnable();
             Button.onButtonPressed += UnLockDoor;
-            Flute.onPlayNote += FluteNotePlayed;
+            Flute.onPlayMelody += FluteNotePlayed;
         }
 
         protected override void BeginInteraction()
         {
             //check if door is locked
-            if (!_isLocked && _doorType == DoorType.normal)
+            if (!_isLocked && _doorType == DoorType.normal && !_isTriggered)
             {
                 base.BeginInteraction();
                 //begin open animation
                 _animator.SetTrigger("OpenDoor");
                 _isTriggered = true;
+                _audioSource.Play();
+                _audioSource.SetScheduledEndTime(AudioSettings.dspTime + 1.5f);
             }   
         }
 
@@ -48,13 +59,22 @@ namespace CreateWithCodeGameJam2020.Scripts
             {
                 //set locked state to unlocked;
                 _isLocked = false;
-                //TODO: play unlock sound
-                print("Unlocked");
+                //play unlock sound
+                Invoke("PlayUnlockSound", 1f);
             }
         }
 
-        private void FluteNotePlayed ()
+        private void PlayUnlockSound()
         {
+            if (_doorType == DoorType.normal)
+                _audioSource.PlayOneShot(_unlockSound, 0.8f);
+        }
+
+        private void FluteNotePlayed (string notes)
+        {
+            if (_notesCode != notes)
+                return;
+
             if (!_isTriggered && _doorType == DoorType.magic && _canInteract == true)
                 _animator.SetTrigger("OpenDoor");
         }
@@ -63,7 +83,7 @@ namespace CreateWithCodeGameJam2020.Scripts
         {
             base.OnEnable();
             Button.onButtonPressed -= UnLockDoor;
-            Flute.onPlayNote -= FluteNotePlayed;
+            Flute.onPlayMelody -= FluteNotePlayed;
         }
     }
 }
